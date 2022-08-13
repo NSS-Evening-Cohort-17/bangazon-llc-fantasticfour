@@ -1,3 +1,4 @@
+from bangazon_api import serializers
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +11,7 @@ from bangazon_api.serializers import (
 
 
 class PaymentTypeView(ViewSet):
+   
     @swagger_auto_schema(responses={
         200: openapi.Response(
             description="The list of payment types for the current user",
@@ -18,7 +20,8 @@ class PaymentTypeView(ViewSet):
     })
     def list(self, request):
         """Get a list of payment types for the current user"""
-        payment_types = PaymentType.objects.all()
+        user=request.auth.user
+        payment_types = PaymentType.objects.filter(customer=user)
         serializer = PaymentTypeSerializer(payment_types, many=True)
         return Response(serializer.data)
 
@@ -40,8 +43,8 @@ class PaymentTypeView(ViewSet):
         try:
             payment_type = PaymentType.objects.create(
                 customer=request.auth.user,
-                merchant_name=request.data['acctNumber'],
-                acct_number=request.data['merchant']
+                merchant_name=request.data['merchant'],
+                acct_number=request.data['acctNumber']
             )
             serializer = PaymentTypeSerializer(payment_type)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -59,10 +62,11 @@ class PaymentTypeView(ViewSet):
             )
         }
     )
-    def delete(self, request, pk):
+    def destroy(self, request, pk):
         """Delete a payment type"""
         try:
             payment_type = PaymentType.objects.get(pk=pk)
+            # user=request.auth.user
             payment_type.delete()
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except PaymentType.DoesNotExist as ex:
