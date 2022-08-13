@@ -10,5 +10,6 @@
             "name": "db",
             "database": "db.sqlite3"
         }
-    ]
+    ],
+    "liveServer.settings.port": 5502
 }
