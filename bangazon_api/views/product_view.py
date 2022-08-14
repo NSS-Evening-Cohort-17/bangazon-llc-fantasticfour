@@ -220,12 +220,13 @@ class ProductView(ViewSet):
             ),
         }
     )
+    # custom method,          pk needed in url   custom method url api/products/2/add_to_order
     @action(methods=['post'], detail=True)
     def add_to_order(self, request, pk):
         """Add a product to the current users open order"""
         try:
             product = Product.objects.get(pk=pk)
-            order, _ = Order.objects.get_or_create(
+            order = Order.objects.get_or_create(
                 user=request.auth.user, completed_on=None, payment_type=None)
             order.products.add(product)
             return Response({'message': 'product added'}, status=status.HTTP_201_CREATED)

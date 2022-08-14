@@ -20,6 +20,12 @@ class Order(models.Model):
             float: The sum of the product prices on the order
         """
         return sum([p.price for p in self.products.all()], 0)
+    
+    # @property
+    # def get_current_orders(self):
+    #     current_order = CurrentOrder.objects.get(pk=pk)
+    #     serializer = OrderSerializer(current_order)
+    #     return Response(serializer.data)
 
     def __str__(self):
         is_open = 'Completed' if self.completed_on else 'Open'
