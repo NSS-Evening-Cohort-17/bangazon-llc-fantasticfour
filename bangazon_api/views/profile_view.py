@@ -28,7 +28,7 @@ class ProfileView(ViewSet):
     def my_profile(self, request):
         """Get the current user's profile"""
         try:
-            
+
             user = User.objects.get(username=request.auth.user)
             serializer = UserSerializer(user)
             # serializer = UserSerializer(User.objects.first())
