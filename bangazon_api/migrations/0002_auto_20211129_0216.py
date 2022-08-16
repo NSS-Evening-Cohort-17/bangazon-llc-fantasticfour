@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='price',
-            field=models.FloatField(validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(10000.0)]),
+            field=models.FloatField(validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(17500.0)]),
         ),
         migrations.AlterField(
             model_name='recommendation',

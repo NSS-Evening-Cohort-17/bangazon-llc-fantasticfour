@@ -167,6 +167,7 @@ class ProductView(ViewSet):
         order = request.query_params.get('order_by', None)
         direction = request.query_params.get('direction', None)
         name = request.query_params.get('name', None)
+        min_price =  request.query_params.get('min_price', None)
 
         if number_sold:
             products = products.annotate(
@@ -182,6 +183,13 @@ class ProductView(ViewSet):
 
         if name is not None:
             products = products.filter(name__icontains=name)
+            
+        if min_price is not None:
+            min_price_filter = []
+            for product in products:
+                if product.price >= float(min_price):
+                    min_price_filter.append(product)
+                    products = min_price_filter
 
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
@@ -250,8 +258,9 @@ class ProductView(ViewSet):
         """Remove a product from the users open order"""
         try:
             product = Product.objects.get(pk=pk)
-            order = Order.objects.get(
-                user=request.auth.user, completed_on=None)
+            user=request.auth.user
+            order = Order.objects.get(user=user, completed_on=None, payment_type=None)
+            order.products.remove(product)
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except (Product.DoesNotExist, Order.DoesNotExist) as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
